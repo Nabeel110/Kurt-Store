@@ -1,0 +1,39 @@
+main {
+  min-height: 80vh;
+}
+.logo {
+  font-family: "Kaushan Script", cursive;
+  font-size: 40px;
+  color: rgb(226, 150, 150);
+}
+.fas fa-shopping-cart {
+  color: rgb(221, 2, 2);
+}
+span {
+  color: red;
+}
+h3 {
+  padding: 1rem;
+}
+
+h1 {
+  font-size: 1.8rem;
+  padding: 1rem 0;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+h2 {
+  font-size: 1.4rem;
+  padding: 0.5rem 0;
+}
+.rating span {
+  margin: 0.1rem;
+}
+.thankyou {
+  text-align: center;
+  background-color: rgb(255, 255, 255);
+  color: rgb(47, 46, 46);
+  font-size: 2rem;
+}
+.custom-search {
+  padding: 0 7;
+}
