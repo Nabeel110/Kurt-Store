@@ -93,7 +93,7 @@ Please ⭐️ this repository if this project helped you!
 
 ## 📝 License
 
-Copyright © 2019 [Nabeel Ahmed](https://github.com/Nabeel110).<br />
+Copyright © 2021 [Nabeel Ahmed](https://github.com/Nabeel110) & [Samima Khan](https://pk.linkedin.com/in/samima-khan)<br />
 This project is [MIT](https://github.com/Nabeel110/blob/master/LICENSE) licensed.
 
 ---
