@@ -12,16 +12,17 @@ import { ORDER_PAY_RESET } from "../constants/orderConstants";
 
 const OrderScreen = ({ match }) => {
   const orderId = match.params.id;
-
   const [sdkReady, setSdkReady] = useState(false);
-
   const dispatch = useDispatch();
-
   const orderDetails = useSelector((state) => state.orderDetails);
   const { order, loading, error } = orderDetails;
 
   const orderPay = useSelector((state) => state.orderPay);
-  const { loading: loadingPay, success: successPay } = orderPay;
+  const {
+    loading: loadingPay,
+    error: errorPay,
+    success: successPay,
+  } = orderPay;
 
   useEffect(() => {
     const addPayPalScript = async () => {
@@ -35,19 +36,18 @@ const OrderScreen = ({ match }) => {
       };
       document.body.appendChild(script);
     };
-    // Sidra
-    //   if (!order || successPay || (order && order._id !== orderId)) {
+
+    //   if (!order || (!loadingPay && successPay)) {
     //     dispatch({ type: ORDER_PAY_RESET });
-    //     dispatch(detailsOrder(orderId));
-    // } else {
-    //     if (!order.isPaid) {
-    //         if (!window.paypal) {
-    //             addPayPalScript();
-    //         } else {
-    //             setSdkReady(true);
-    //         }
+    //     dispatch(getOrderDetails(orderId));
+    //   } else if (!order.paymentDetails.isPaid) {
+    //     if (!window.paypal) {
+    //       addPayPalScript();
+    //     } else {
+    //       setSdkReady(true);
     //     }
-    // }
+    //   }
+    // }, [dispatch, orderId, successPay, order, loadingPay]);
 
     if (!order || successPay || (order && order.id !== orderId)) {
       dispatch({ type: ORDER_PAY_RESET });
@@ -61,10 +61,11 @@ const OrderScreen = ({ match }) => {
         }
       }
     }
-  }, [dispatch, orderId, order, loadingPay, successPay]);
+  }, [dispatch, order, orderId, sdkReady, successPay]);
 
   const successPaymentHandler = (paymentResult) => {
     console.log(paymentResult);
+    console.log(orderId);
     dispatch(payOrder(orderId, paymentResult));
   };
 
@@ -117,7 +118,7 @@ const OrderScreen = ({ match }) => {
 
                   {order.paymentDetails.isPaid ? (
                     <Message variant="success">
-                      Paid on {new Date().toDateString()}
+                      Paid on {order.paymentDetails.paidAt.slice(0, 10)}
                     </Message>
                   ) : (
                     <Message variant="danger">Not Paid</Message>
@@ -126,35 +127,33 @@ const OrderScreen = ({ match }) => {
 
                 <ListGroup.Item>
                   <h2>Order Items</h2>
-                  {order.orderItems.length === 0 ? (
-                    <Message>Order is Empty</Message>
-                  ) : (
-                    <ListGroup variant="flush">
-                      {order.orderItems.map((item, index) => (
-                        <ListGroup.Item key={index}>
-                          <Row>
-                            <Col md={1}>
-                              <Image
-                                src={item.image}
-                                alt={item.title}
-                                fluid
-                                rounded
-                              />
-                            </Col>
-                            <Col>
-                              <Link to={`/product/${item.id}`}>
-                                {item.title}
-                              </Link>
-                            </Col>
-                            <Col md={4}>
-                              {item.quantity} x RS{item.price} = RS{" "}
-                              {(item.quantity * item.price).toFixed(2)}
-                            </Col>
-                          </Row>
-                        </ListGroup.Item>
-                      ))}
-                    </ListGroup>
-                  )}
+                  {/* {order.orderItems.length === 0 ? (
+                        <Message>Order is Empty</Message>
+                      ) : ( */}
+                  <ListGroup variant="flush">
+                    {order.orderItems.map((item, index) => (
+                      <ListGroup.Item key={index}>
+                        <Row>
+                          <Col md={1}>
+                            <Image
+                              src={item.image}
+                              alt={item.title}
+                              fluid
+                              rounded
+                            />
+                          </Col>
+                          <Col>
+                            <Link to={`/product/${item.id}`}>{item.title}</Link>
+                          </Col>
+                          <Col md={4}>
+                            {item.quantity} x RS{item.price} = RS{" "}
+                            {(item.quantity * item.price).toFixed(2)}
+                          </Col>
+                        </Row>
+                      </ListGroup.Item>
+                    ))}
+                  </ListGroup>
+                  {/* )} */}
                 </ListGroup.Item>
               </ListGroup>
             </Col>
@@ -192,16 +191,34 @@ const OrderScreen = ({ match }) => {
                       <Col>PKR {order.paymentDetails.totalPrice}</Col>
                     </Row>
                   </ListGroup.Item>
+                  {/* {!order.paymentDetails.isPaid && (
+                        <ListGroup.Item>
+                          {loadingPay && <Loader />}
+                          {!sdkReady ? (
+                            <Loader />
+                          ) : (
+                              <PayPalButton
+                                amount={order.paymentDetails.totalPrice}
+                                onSuccess={successPaymentHandler}
+                              />
+                            )}
+                        </ListGroup.Item>
+                      )} */}
                   {!order.paymentDetails.isPaid && (
                     <ListGroup.Item>
-                      {loadingPay && <Loader />}
                       {!sdkReady ? (
                         <Loader />
                       ) : (
-                        <PayPalButton
-                          amount={order.paymentDetails.totalPrice}
-                          onSuccess={successPaymentHandler}
-                        />
+                        <>
+                          {loadingPay && <Loader />}
+                          {errorPay && (
+                            <Message variant="danger">{errorPay}</Message>
+                          )}
+                          <PayPalButton
+                            amount={order.paymentDetails.totalPrice}
+                            onSuccess={successPaymentHandler}
+                          />
+                        </>
                       )}
                     </ListGroup.Item>
                   )}

@@ -19,9 +19,18 @@ const pool = mysql.createPool({
   database: "ecommerce",
 });
 
+// const pool = mysql.createPool({
+//   connectionLimit: 10,
+//   host: "167.99.44.122",
+//   port: "3306",
+//   user: "foo",
+//   password: "bar",
+//   database: "ecommerce",
+// });
+
 pool.getConnection((err, connection) => {
   if (err) {
-    console.log("Something went wrong connecting to the datbase");
+    console.log(err);
 
     if (connection) connection.release();
     return;

@@ -14,10 +14,11 @@ const PaymentScreen = ({ history }) => {
     history.push("/shipping");
   }
 
-  const [paymentMethod, setPaymentMethod] = useState("CashOnDelivery");
+  const [paymentMethod, setPaymentMethod] = useState("");
 
   const submitHandler = (e) => {
     e.preventDefault();
+    console.log(paymentMethod);
     diapatch(savePaymentMethod(paymentMethod));
 
     history.push("/placeorder");
@@ -35,10 +36,17 @@ const PaymentScreen = ({ history }) => {
             <Form.Check
               type="radio"
               label="Cash on Delivery"
-              id="Paypal"
+              id="CashOndelivery"
               name="paymentMethod"
               value="Cash on Delivery"
-              checked
+              onChange={(e) => setPaymentMethod(e.target.value)}
+            ></Form.Check>
+            <Form.Check
+              type="radio"
+              label="Credit/debit Card"
+              id="PayPal"
+              name="paymentMethod"
+              value="Paypal"
               onChange={(e) => setPaymentMethod(e.target.value)}
             ></Form.Check>
           </Col>

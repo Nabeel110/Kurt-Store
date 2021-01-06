@@ -21,12 +21,10 @@ const Product = ({ product }) => {
               value={product.rating}
               text={`${product.numReviews} reviews`}
             />
-            <p>{product.short_desc}</p>
+            {product.short_desc}
           </Card.Text>
 
-          <Card.Text>
-            <div className="h3">PKR {product.price}</div>
-          </Card.Text>
+          <h3>PKR {product.price}</h3>
         </Card.Body>
       </Card>
     </>

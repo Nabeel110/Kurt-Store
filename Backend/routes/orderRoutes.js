@@ -3,6 +3,19 @@ const router = express.Router();
 const protect = require("../middleware/authMiddleware");
 const pool = require("../config/helpers");
 
+//mine orders by userid
+router.get("/mine", protect, (req, res) => {
+  let getOrderListQuery = `Select order_id, totalPrice, isPaid, paidAt, isDelivered from orders, payment where orders.user_id = '${req.id}' and payment.order_id = orders.id`;
+  pool.query(getOrderListQuery, (err, result1) => {
+    if (err) {
+      res.status(404).json({ message: "No orders found!" });
+      console.log(err);
+    } else {
+      res.status(201).json({ orderHistory: result1 });
+    }
+  });
+});
+
 // @desc   Create new Order
 // @route  POST /api/orders
 // @access Private
@@ -219,16 +232,16 @@ router.put("/:id/pay", protect, (req, res) => {
     email_address: req.body.payer.email_address.replace(/\s+/g, "").trim(),
   };
 
-  let updatePaymentQuery = `UPDATE PAYMENT SET isPaid=${true}, \
-                            paidAt=${Date.now()} WHERE order_id=?`;
-  let updatePaymentresultQuery = `UPDATE payment_result SET paypal_id='${paymentResult.id}', \
-                                  status='${paymentResult.status}',\
-                                  update_time='${paymentResult.update_time}',\
-                                  email_address='${paymentResult.email_address}' \
+  console.log(paymentResult);
+
+  let updatePaymentQuery = `UPDATE payment SET isPaid=${true}, paidAt='${date}' WHERE order_id=?`;
+  let updatePaymentresultQuery = `UPDATE payment_result SET paypal_id='${paymentResult.id}', status='${paymentResult.status}',
+                                  update_time='${paymentResult.update_time}', email_address='${paymentResult.email_address}' 
                                   WHERE order_id=?`;
 
   pool.query(updatePaymentQuery, [orderId], (err, payment) => {
     if (err) {
+      console.log(err);
       res.status(400).json({
         message: "No Order Found",
       });
@@ -250,22 +263,32 @@ router.put("/:id/pay", protect, (req, res) => {
   );
 
   // Getting updated Data from Database
-  let getUpdatedDataQuery = `SELECT P.isPaid, P.paidAt, PR.status,\
-                              PR.update_time, PR.email_address\
-                              FROM Payment P, Payment_result PR\
-                              WHERE P.order_id=? AND\
-                              Pr.order_id=? AND\
-                              P.id = PR.payment_id`;
+  // let getUpdatedDataQuery = `SELECT P.isPaid, P.paidAt, PR.status,\
+  //                             PR.update_time, PR.email_address\
+  //                             FROM Payment P, Payment_result PR\
+  //                             WHERE P.order_id=? AND\
+  //                             Pr.order_id=? AND\
+  //                             P.id = PR.payment_id`;
 
-  pool.query(getUpdatedDataQuery, [orderId], (err, updateResults, fields) => {
-    if (err) {
-      res.status(400).json({
-        message: "No Payment Details with corresponding order Id Found",
-      });
-    } else {
-      res.json(updateResults[0]);
+  let getUpdatedDataQuery = `SELECT P.isPaid, P.paidAt, PR.status,
+  PR.update_time, PR.email_address from Payment P,
+  payment_result PR WHERE P.order_id=? AND Pr.order_id=? AND P.id = PR.payment_id`;
+
+  console.log("hello orderRoute");
+  pool.query(
+    getUpdatedDataQuery,
+    [orderId, orderId, orderId],
+    (err, updateResults, fields) => {
+      if (err) {
+        res.status(400).json({
+          message: "No Payment Details with corresponding order Id Found",
+        });
+        console.log(err);
+      } else {
+        res.status(201).json(updateResults[0]);
+      }
     }
-  });
+  );
 });
 // db.end();
 module.exports = router;

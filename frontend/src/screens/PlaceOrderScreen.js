@@ -3,6 +3,7 @@ import { Button, Row, Col, Card, ListGroup, Image } from "react-bootstrap";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import Message from "../components/Message";
+import { ORDER_CREATE_RESET } from "../constants/orderConstants";
 import CheckoutSteps from "../components/CheckoutSteps";
 import { createOrder } from "../actions/orderActions";
 
@@ -30,9 +31,13 @@ const PlaceOrderScreen = ({ history }) => {
   const { order, success, error, loading } = orderCreate;
 
   useEffect(() => {
-    if (!loading && success) {
+    if (success) {
+      cart.paymentMethod === "Paypal"
+        ? history.push(`/order/${order.order_id}`)
+        : history.push(`/thankyou`);
+      dispatch({ type: ORDER_CREATE_RESET });
     }
-  }, [history, success, order, loading]);
+  }, [dispatch, history, success, order, loading, cart]);
 
   const placeOrderHandler = (e) => {
     e.preventDefault();
@@ -48,7 +53,20 @@ const PlaceOrderScreen = ({ history }) => {
         totalPrice: cart.totalPrice,
       })
     );
-    history.push(`/thankyou`);
+    // if (cart.paymentMethod === "Credit/Debit Card") {
+    //   console.log(order);
+    //   history.push(`/order/${order.order_id}`);
+    //   dispatch({ type: ORDER_CREATE_RESET });
+    // } else if (cart.paymentMethod === "Cash on Delivery") {
+    //   history.push(`/thankyou`);
+    //   dispatch({ type: ORDER_CREATE_RESET });
+    // }
+    // if (cart.paymentMethod === "Credit/debit Card" && success) {
+    // history.push(`/order/${order.order_id}`);
+    // dispatch({ type: ORDER_CREATE_RESET });
+    // } else {
+    //   history.push(`/thankyou`);
+    // }
   };
 
   return (
