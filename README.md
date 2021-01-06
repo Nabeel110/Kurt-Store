@@ -73,16 +73,6 @@
 
 (https://github.com/Nabeel110/Kurti-Store/)
 
-### Content
-
-Description, sub-modules organization...
-
-### Requirements
-
-See [CORG/Compiling Nuxeo from sources](http://doc.nuxeo.com/x/xION)
-
-Sample: <https://github.com/nuxeo/nuxeo/blob/master/nuxeo-distribution/README.md>
-
 ### Limitations
 
 - Admin Functionality Not yet Implemented.
